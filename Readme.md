@@ -37,7 +37,7 @@
 
 - [x] RF001 - Incluir conta bancária
 - [x] RF002 - Listar as contas bancárias
-- [ ] RF003 - Realizar depósito
-- [ ] RF004 - Realizar saque
-- [ ] RF005 - Consultar saldo
-- [ ] RF006 - Consultar extrato
+- [x] RF003 - Realizar depósito
+- [x] RF004 - Realizar saque
+- [x] RF005 - Consultar saldo
+- [x] RF006 - Consultar extrato
