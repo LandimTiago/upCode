@@ -1,7 +1,7 @@
 const express = require("express");
 const routes = express.Router();
 
-const Bank = require("./app/controller/controller");
+const Bank = require("./app/controller/bank");
 
 routes.get("/", (req, res) => {
   return res.send("Hello World");
