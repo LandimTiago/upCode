@@ -17,10 +17,8 @@ docker container run --name pgdb -p 5432:5432 -e POSTGRES_PASSWORD=112233 -d pos
   ```
 
 - para inicializar o container
-  ``'sh
+  ```sh
   docker container pgdb start
-
-  ```
 
   ```
 
