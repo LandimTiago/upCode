@@ -8,6 +8,9 @@ routes.get("/", (req, res) => {
 });
 
 routes.get("/account", Bank.index);
+routes.get("/saldo", Bank.saldo);
+routes.get("/extract", Bank.extract);
+
 routes.post("/account", Bank.post);
 
 routes.put("/wallet", Bank.moviment);

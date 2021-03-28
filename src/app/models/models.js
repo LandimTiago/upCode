@@ -28,30 +28,30 @@ const create = async function (data) {
 
   db.query(queryAccount, valuesAccount);
 
-  const historico = await historic(accountNumber);
-  if (!historico) return res.send("Historic fail");
-
-  const Wallet = await wallet(accountNumber);
-  if (!Wallet) return res.send("Wallet Fail");
-
   return accountNumber;
 };
 const historic = function (data) {
   const query = `INSERT INTO historic (
     id_wallet,
     operation,
+    value,
     created_at
-  ) VALUES ($1, $2, $3)`;
+  ) VALUES ($1, $2, $3, $4)`;
 
-  const values = [data, 1, Date.now()];
+  const values = [
+    data.accountNumber || data,
+    data.transaction || 1,
+    data.value || 0,
+    Date.now(),
+  ];
 
   return db.query(query, values);
 };
-const wallet = function (data) {
+const wallet = function (Account, Saldo) {
   const query = `
     INSERT INTO wallet (id_account, saldo) VALUES ($1, $2) RETURNING id_account = $1
   `;
-  const values = [data, 0];
+  const values = [Account, Saldo];
 
   return db.query(query, values);
 };
@@ -65,6 +65,9 @@ const updateWallet = function (Saldo, Id) {
     [Saldo, Id]
   );
 };
+const findHistoric = function (data) {
+  return db.query(`SELECT * FROM historic WHERE id_wallet = $1`, [data]);
+};
 
 module.exports = {
   all,
@@ -74,4 +77,5 @@ module.exports = {
   wallet,
   saldo,
   updateWallet,
+  findHistoric,
 };

@@ -6,13 +6,14 @@ CREATE TABLE "account" (
 );
 
 CREATE TABLE "wallet" (
-  "id_account" int NOT NULL,
+  "id_account" text NOT NULL,
   "saldo" numeric DEFAULT '0'
 );
 
 CREATE TABLE "historic" (
   "id" serial PRIMARY KEY,
-  "id_wallet" int NOT NULL,
-  "operation" int NOT NULL,
-  "create_at" int NOT NULL
+  "id_wallet" text NOT NULL,
+  "operation" text NOT NULL,
+  "value" text NOT NULL,
+  "created_at" text NOT NULL
 );

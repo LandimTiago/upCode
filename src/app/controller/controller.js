@@ -26,9 +26,22 @@ const post = async function (req, res) {
     }
   }
   let results = await Bank.create(req.body);
+  const Account = results;
+  const Saldo = 0;
 
-  console.log(results);
-  return res.send(`número da conta bancária ${results}`);
+  const Wallet = await Bank.wallet(Account, Saldo);
+  if (!Wallet) return res.send("Wallet Fail");
+
+  const historico = await Bank.historic(Account);
+  if (!historico) return res.send("Historic fail");
+
+  return res.send(`número da conta bancária ${Account}`);
+};
+const saldo = async function (req, res) {
+  let results = await Bank.saldo(req.body.accountNumber);
+  const Saldo = results.rows[0].saldo;
+
+  return res.send(` Seu saldo é de: ${Saldo}`);
 };
 const moviment = async function (req, res) {
   const data = req.body;
@@ -48,17 +61,19 @@ const moviment = async function (req, res) {
   console.log(`Saldo inicial de: ${Saldo}`);
 
   let Total = 0;
+  const Deposito = Number(data.value);
+
+  if (Deposito < 1) return res.send("Entre com valor maior que 0");
+
   function operação(Saldo, transação) {
     if (transação == "1") {
       const Inicial = Number(Saldo);
-      const Deposito = Number(data.value);
 
       Total = Inicial + Deposito;
 
       return Total;
     } else if (transação == "2") {
       const Inicial = Number(Saldo);
-      const Deposito = Number(data.value);
 
       Total = Inicial - Deposito;
 
@@ -76,11 +91,31 @@ const moviment = async function (req, res) {
   results = await Bank.saldo(data.accountNumber);
   const saldoNovo = results.rows[0].saldo;
 
+  results = await Bank.historic(data);
+
   return res.send(saldoNovo);
+};
+const extract = async function (req, res) {
+  const keys = Object.keys(req.body);
+  for (key of keys) {
+    if (req.body[key] == "") {
+      return res.send(`Please fill in the ${key} field`);
+    }
+  }
+  Account = req.body.id_wallet;
+
+  let results = await Bank.findHistoric(Account);
+  if (!results) return res.send("Conta invalida");
+
+  const Accounts = results.rows;
+
+  return res.send(Accounts);
 };
 
 module.exports = {
   index,
   post,
+  saldo,
   moviment,
+  extract,
 };
