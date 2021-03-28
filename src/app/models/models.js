@@ -1,54 +1,77 @@
 const db = require("../../config/db");
 
 const all = function () {
-  return db.query(`SELECT * FROM account ORDER BY id`);
+  return db.query(`SELECT * FROM account ORDER BY accountnumber`);
+};
+const findBy = function (data) {
+  const query = `SELECT * FROM account WHERE accountnumber = $1 `;
+  const value = [data];
+
+  const results = db.query(query, value);
+
+  return results;
 };
 const create = async function (data) {
-  const query = `
+  const results = await all();
+  const contador = results.rows.length;
+  const accountNumber = new Date().getFullYear() + `${contador + 1}`;
+
+  const queryAccount = `
     INSERT INTO account (
         accountnumber,
         name,
         cpf,
-        birth,
-        wallet
-    ) VALUES ($1, $2, $3, $4, $5) returning id
+        birth
+    ) VALUES ($1, $2, $3, $4) RETURNING accountnumber = $1
 `;
+  const valuesAccount = [accountNumber, data.name, data.cpf, data.birth];
 
-  const results = await all();
-  const contador = results.rows.length;
+  db.query(queryAccount, valuesAccount);
 
-  const accountNumber = new Date().getFullYear() + `${contador + 1}`;
+  const historico = await historic(accountNumber);
+  if (!historico) return res.send("Historic fail");
 
-  const values = [
-    accountNumber,
-    data.name,
-    data.cpf,
-    data.birth,
-    data.wallet || 0,
-  ];
+  const Wallet = await wallet(accountNumber);
+  if (!Wallet) return res.send("Wallet Fail");
 
-  return db.query(query, values), accountNumber;
+  return accountNumber;
 };
-const findBy = function (accountNumber) {
-  return db.query(`SELECT * FROM account WHERE accountnumber = $1`, [
-    accountNumber,
-  ]);
-};
-const transaction = function (data) {
-  const query = `
-    UPDATE account SET (
-      wallet
-  ) VALUES ($1) WHERE accountnumber = $2
-  `;
+const historic = function (data) {
+  const query = `INSERT INTO historic (
+    id_wallet,
+    operation,
+    created_at
+  ) VALUES ($1, $2, $3)`;
 
-  const values = [data.wallet];
+  const values = [data, 1, Date.now()];
 
   return db.query(query, values);
+};
+const wallet = function (data) {
+  const query = `
+    INSERT INTO wallet (id_account, saldo) VALUES ($1, $2) RETURNING id_account = $1
+  `;
+  const values = [data, 0];
+
+  return db.query(query, values);
+};
+const saldo = function (data) {
+  return db.query(`SELECT * FROM wallet WHERE id_account = $1`, [data]);
+};
+const updateWallet = function (Saldo, Id) {
+  return db.query(
+    `
+    UPDATE wallet SET saldo = ($1) WHERE id_account = $2 RETURNING saldo = $1`,
+    [Saldo, Id]
+  );
 };
 
 module.exports = {
   all,
-  create,
   findBy,
-  transaction,
+  create,
+  historic,
+  wallet,
+  saldo,
+  updateWallet,
 };

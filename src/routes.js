@@ -10,4 +10,6 @@ routes.get("/", (req, res) => {
 routes.get("/account", Bank.index);
 routes.post("/account", Bank.post);
 
+routes.put("/wallet", Bank.moviment);
+
 module.exports = routes;

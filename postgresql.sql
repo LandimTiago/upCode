@@ -1,5 +1,4 @@
 CREATE TABLE "account" (
-  "id" serial PRIMARY KEY,
   "accountnumber" int NOT NULL,
   "name" text NOT NULL,
   "cpf" text NOT NULL,
@@ -7,15 +6,13 @@ CREATE TABLE "account" (
 );
 
 CREATE TABLE "wallet" (
-  "id_account" int PRIMARY KEY NOT NULL,
-  "value" numeric
+  "id_account" int NOT NULL,
+  "saldo" numeric DEFAULT '0'
 );
 
-CREATE TABLE "Log" (
-  "id" int PRIMARY KEY,
-  "accountId" int NOT NULL,
-  "data" text,
-  "op" int,
-  "valor" text,
-  "saldo" text
+CREATE TABLE "historic" (
+  "id" serial PRIMARY KEY,
+  "id_wallet" int NOT NULL,
+  "operation" int NOT NULL,
+  "create_at" int NOT NULL
 );
